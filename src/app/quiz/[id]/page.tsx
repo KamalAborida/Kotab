@@ -39,12 +39,16 @@ const QuizPage = () => {
 
     if (params.id) fetchQuizDetails();
   }, [params.id]);
-
+  
   const { questions } = useMcqQuestions({
     numberOfQuestions: quizConfig?.numberOfQuestions || 0,
     categories: quizConfig?.categories || [],
     difficulties: quizConfig?.difficulties || [],
   });
+
+  useEffect(() => {
+    console.log(quizConfig);
+  }, [quizConfig]);
 
   const { currentQuestion, moveToNextQuestion, handleOnRightAnswer, score } =
     useQuiz(username, questions);

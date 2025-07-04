@@ -10,7 +10,7 @@ datasource db {
 model Question {
   id                 String               @id @default(uuid())
   body               String
-  answers            String[]
+  answers            String
   rightAnswerIndex   Int
   answerExplanation  String
   score              Int
