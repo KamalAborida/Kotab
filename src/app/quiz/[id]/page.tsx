@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { Categories, Difficulties } from "@/modules/question/types";
 import axios from "axios";
+import { useParams } from "next/navigation";
 
 interface QuizConfig {
   numberOfQuestions: number;
@@ -17,21 +18,26 @@ interface QuizConfig {
 
 const QuizPage = () => {
   const username = useSelector(selectUsername);
-
+  const { id } = useParams();
   const [quizConfig, setQuizConfig] = useState<QuizConfig | null>(null);
 
   // Fetch quiz config (can be dynamic via query or backend logic)
   useEffect(() => {
     const fetchQuizDetails = async () => {
       try {
-        const res = await axios.get("/quiz/current"); // Customize endpoint
-        setQuizConfig(res.data);
+        const res = await axios.get(`/api/quiz?id=${id}`); // Customize endpoint
+        console.log(res.data);
+        setQuizConfig({
+          numberOfQuestions: res.data.numberOfQuestions,
+          categories: res.data.categories,
+          difficulties: res.data.difficulties,
+        });
       } catch (error) {
         console.error("Failed to load quiz config:", error);
       }
     };
 
-    // fetchQuizDetails();
+    fetchQuizDetails();
   }, []);
 
   const { questions } = useMcqQuestions({

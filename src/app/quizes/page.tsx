@@ -32,14 +32,15 @@ export default function QuestionsPage() {
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
-        const response = await axios.get("/api/quizzes"); // Change this to your real endpoint
+        const response = await axios.get("/api/quiz"); // Change this to your real endpoint
+        console.log(response.data);
         setQuizzes(response.data);
       } catch (error) {
         console.error("Failed to fetch quizzes:", error);
       }
     };
 
-    // fetchQuizzes();
+    fetchQuizzes();
   }, []);
 
   return (
