@@ -2,8 +2,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import axios from "axios";
 import { Categories, Difficulties, Question } from "../types";
-import { dummyQuestions } from "../data/dummy";
 
 interface UseMcqQuestionsProps {
   numberOfQuestions: number;
@@ -19,17 +19,21 @@ export const useMcqQuestions = ({
   const [questions, setQuestions] = useState<Question[]>([]);
 
   useEffect(() => {
-    let filtered = dummyQuestions;
+    const fetchQuestions = async () => {
+      try {
+        const params: Record<string, string> = {};
+        if (categories.length > 0) params.categories = categories.join(",");
+        if (difficulties.length > 0) params.difficulties = difficulties.join(",");
 
-    if (categories.length > 0) {
-      filtered = filtered.filter((q) => categories.includes(q.category as Categories));
-    }
+        const { data } = await axios.get<Question[]>("/api/questions", { params });
 
-    if (difficulties.length > 0) {
-      filtered = filtered.filter((q) => difficulties.includes(q.difficulty as Difficulties));
-    }
+        setQuestions(data.slice(0, numberOfQuestions));
+      } catch (error) {
+        console.error("Failed to fetch questions:", error);
+      }
+    };
 
-    setQuestions(filtered.slice(0, numberOfQuestions));
+    fetchQuestions();
   }, []);
 
   return { questions };

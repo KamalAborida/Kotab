@@ -1,12 +1,12 @@
 export interface Question {
-  id: number;
+  id: string;
   body: string;
   answers: string[];
   rightAnswerIndex: number;
   answerExplanation: string;
-  category: string;
-  difficulty: string;
   score: number;
+  categories?: { id: string; name: string }[];
+  difficulties?: { id: string; name: string }[];
 }
 
 export type Difficulties = "easy" | "medium" | "hard";

@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { Categories, Difficulties } from "@/modules/question/types";
 import axios from "axios";
+import { useParams } from "next/navigation";
 
 interface QuizConfig {
   numberOfQuestions: number;
@@ -17,27 +18,32 @@ interface QuizConfig {
 
 const QuizPage = () => {
   const username = useSelector(selectUsername);
+  const params = useParams<{ id: string }>();
 
   const [quizConfig, setQuizConfig] = useState<QuizConfig | null>(null);
 
-  // Fetch quiz config (can be dynamic via query or backend logic)
   useEffect(() => {
     const fetchQuizDetails = async () => {
       try {
-        const res = await axios.get("/quiz/current"); // Customize endpoint
-        setQuizConfig(res.data);
+        const { data } = await axios.get("/api/quizzes", { params: { id: params.id } });
+        const quiz = data[0];
+        setQuizConfig({
+          numberOfQuestions: quiz.numberOfQuestions,
+          categories: quiz.categories.map((c: { name: string }) => c.name as Categories),
+          difficulties: quiz.difficulties.map((d: { name: string }) => d.name as Difficulties),
+        });
       } catch (error) {
         console.error("Failed to load quiz config:", error);
       }
     };
 
-    // fetchQuizDetails();
-  }, []);
+    if (params.id) fetchQuizDetails();
+  }, [params.id]);
 
   const { questions } = useMcqQuestions({
-    numberOfQuestions: 5, // quizConfig?.numberOfQuestions
-    categories: [], // quizConfig?.categories
-    difficulties: [], // quizConfig?.difficulties
+    numberOfQuestions: quizConfig?.numberOfQuestions || 0,
+    categories: quizConfig?.categories || [],
+    difficulties: quizConfig?.difficulties || [],
   });
 
   const { currentQuestion, moveToNextQuestion, handleOnRightAnswer, score } =
