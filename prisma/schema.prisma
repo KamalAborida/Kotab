@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite" // or postgresql/mysql
+  url      = env("DATABASE_URL")
+}
+
+model Question {
+  id                 String               @id @default(uuid())
+  body               String
+  answers            String[]
+  rightAnswerIndex   Int
+  answerExplanation  String
+  score              Int
+
+  questionCategories QuestionCategory[]
+  questionDifficulties QuestionDifficulty[]
+}
+
+model Quiz {
+  id               String            @id @default(uuid())
+  title            String
+  numberOfQuestions Int
+
+  quizCategories   QuizCategory[]
+  quizDifficulties QuizDifficulty[]
+  users            QuizUser[]
+}
+
+model QuizUser {
+  id       String @id @default(uuid())
+  quizId   String
+  username String
+  score    Int
+
+  quiz     Quiz   @relation(fields: [quizId], references: [id])
+}
+
+model Category {
+  id                 String             @id @default(uuid())
+  name               String             @unique
+
+  questionCategories QuestionCategory[]
+  quizCategories     QuizCategory[]
+}
+
+model Difficulty {
+  id                  String               @id @default(uuid())
+  name                String               @unique
+
+  questionDifficulties QuestionDifficulty[]
+  quizDifficulties     QuizDifficulty[]
+}
+
+model Admin {
+  id       String @id @default(uuid())
+  username String @unique
+  password String
+}
+
+model QuestionCategory {
+  questionId String
+  categoryId String
+
+  question   Question @relation(fields: [questionId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@id([questionId, categoryId])
+}
+
+model QuizCategory {
+  quizId     String
+  categoryId String
+
+  quiz       Quiz     @relation(fields: [quizId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@id([quizId, categoryId])
+}
+
+model QuestionDifficulty {
+  questionId   String
+  difficultyId String
+
+  question     Question   @relation(fields: [questionId], references: [id])
+  difficulty   Difficulty @relation(fields: [difficultyId], references: [id])
+
+  @@id([questionId, difficultyId])
+}
+
+model QuizDifficulty {
+  quizId        String
+  difficultyId  String
+
+  quiz          Quiz       @relation(fields: [quizId], references: [id])
+  difficulty    Difficulty @relation(fields: [difficultyId], references: [id])
+
+  @@id([quizId, difficultyId])
+}
