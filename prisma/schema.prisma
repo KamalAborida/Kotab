@@ -1,0 +1,54 @@
+// Prisma schema
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Question {
+  id               String @id @default(uuid())
+  body             String
+  answers          Json
+  rightAnswerIndex Int
+  answerExplanation String
+  categories       Json
+  difficulties     Json
+  score            Int
+}
+
+model Quiz {
+  id                String    @id @default(uuid())
+  title             String
+  categories        Json
+  difficulties      Json
+  numberOfQuestions Int
+  QuizUser          QuizUser[]
+}
+
+model QuizUser {
+  id       String @id @default(uuid())
+  username String
+  score    Int
+  quizId   String
+  quiz     Quiz   @relation(fields: [quizId], references: [id])
+}
+
+model Category {
+  id   String @id @default(uuid())
+  name String
+}
+
+model Difficulty {
+  id   String @id @default(uuid())
+  name String
+}
+
+model Admin {
+  id       String @id @default(uuid())
+  username String
+  password String
+}
