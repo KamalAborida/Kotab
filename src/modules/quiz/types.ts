@@ -1,9 +1,9 @@
 export interface Quiz {
   id: string;
   title: string;
-  image: string;
-  backgroundColor: string;
-  categories: string[];
-  difficulties: string[];
   numberOfQuestions: number;
+  categories: { id: string; name: string }[];
+  difficulties: { id: string; name: string }[];
+  image?: string;
+  backgroundColor?: string;
 }
